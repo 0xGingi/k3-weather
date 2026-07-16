@@ -276,9 +276,14 @@ button {
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.search-results button:hover {
+.search-results button:hover,
+.search-results button.active {
   background: var(--accent-dim);
   color: var(--text);
+}
+
+.search-note {
+  padding: 10px 14px;
 }
 
 .result-name {

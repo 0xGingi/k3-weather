@@ -4,8 +4,11 @@ import { useStore } from '../../store';
 export function LoadingOverlay() {
   const { active, progress } = useProgress();
   const grid = useStore((s) => s.grid);
+  const gridError = useStore((s) => s.gridError);
 
-  if (!active && grid) return null;
+  // Don't trap the user behind the loader if the grid uplink failed —
+  // the globe stays usable while the error toast + retries handle it.
+  if (!active && (grid || gridError)) return null;
 
   return (
     <div className="loader">

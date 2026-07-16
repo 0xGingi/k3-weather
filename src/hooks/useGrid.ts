@@ -11,6 +11,7 @@ export function useGrid() {
 
   useEffect(() => {
     let stopped = false;
+    let retryId: ReturnType<typeof setTimeout> | null = null;
 
     const load = async () => {
       try {
@@ -19,7 +20,11 @@ export function useGrid() {
         setGrid(points, fetchedAt);
         setGridError(null);
       } catch {
-        if (!stopped) setGridError('LIVE GRID UPLINK FAILED — RETRYING');
+        if (stopped) return;
+        setGridError('LIVE GRID UPLINK FAILED — RETRYING');
+        // Quick retry until the uplink recovers; the slow interval only
+        // governs steady-state refreshes.
+        retryId = setTimeout(() => void load(), 45_000);
       }
     };
 
@@ -27,6 +32,7 @@ export function useGrid() {
     const id = setInterval(load, REFRESH_MS);
     return () => {
       stopped = true;
+      if (retryId) clearTimeout(retryId);
       clearInterval(id);
     };
   }, [setGrid, setGridError]);
