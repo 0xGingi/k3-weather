@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchLocation, type LocationForecast } from '../../api/openmeteo';
 import { formatLatLon } from '../../lib/geo';
+import { tempIn } from '../../lib/units';
 import { wmo } from '../../lib/wmo';
 import { useStore } from '../../store';
 import { useNow } from '../../hooks/useNow';
@@ -81,6 +82,7 @@ export function WeatherPanel() {
 }
 
 function PanelBody({ data }: { data: LocationForecast }) {
+  const units = useStore((s) => s.units);
   const c = data.current;
   const info = wmo(c.weatherCode);
 
@@ -108,7 +110,7 @@ function PanelBody({ data }: { data: LocationForecast }) {
     <div className="panel-body">
       <section className="now-block">
         <div className="now-main">
-          <span className="now-temp">{Math.round(c.temperature)}°</span>
+          <span className="now-temp">{Math.round(tempIn(c.temperature, units))}°</span>
           <div className="now-cond">
             <WeatherIcon icon={info.icon} size={30} />
             <span>{info.label}</span>
@@ -116,7 +118,7 @@ function PanelBody({ data }: { data: LocationForecast }) {
           </div>
         </div>
         <div className="stats-grid">
-          <Stat label="FEELS LIKE" value={`${Math.round(c.feelsLike)}°C`} />
+          <Stat label="FEELS LIKE" value={`${Math.round(tempIn(c.feelsLike, units))}°${units}`} />
           <Stat label="HUMIDITY" value={`${c.humidity}%`} />
           <Stat label="WIND" value={`${c.windSpeed.toFixed(1)} m/s ${windCardinal(c.windDirection)}`} />
           <Stat label="PRESSURE" value={`${Math.round(c.pressure)} hPa`} />
@@ -158,7 +160,7 @@ function PanelBody({ data }: { data: LocationForecast }) {
                   <span className="range-fill" style={{ left: `${left}%`, width: `${width}%` }} />
                 </span>
                 <span className="temps mono">
-                  {Math.round(tmin)}° / {Math.round(tmax)}°
+                  {Math.round(tempIn(tmin, units))}° / {Math.round(tempIn(tmax, units))}°
                 </span>
               </li>
             );

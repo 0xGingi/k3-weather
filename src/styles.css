@@ -173,8 +173,35 @@ button {
 
 .topbar-right {
   display: flex;
+  align-items: center;
   gap: 22px;
   margin-left: auto;
+}
+
+.unit-toggle {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  overflow: hidden;
+}
+
+.unit-toggle button {
+  padding: 7px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--dim);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.unit-toggle button:hover {
+  color: var(--text);
+}
+
+.unit-toggle button.active {
+  color: var(--accent);
+  background: var(--accent-dim);
 }
 
 .readout {

@@ -1,4 +1,5 @@
 import { useStore, type LayerId } from '../../store';
+import { tempIn } from '../../lib/units';
 
 const LEGENDS: Record<LayerId, { title: string; unit: string; min: string; max: string; gradient: string }> = {
   temperature: {
@@ -34,17 +35,24 @@ const LEGENDS: Record<LayerId, { title: string; unit: string; min: string; max: 
 export function Legend() {
   const layer = useStore((s) => s.layer);
   const dataOn = useStore((s) => s.dataOn);
+  const units = useStore((s) => s.units);
   if (!dataOn) return null;
   const l = LEGENDS[layer];
+
+  // Temperature scale is defined in °C; convert the labels for display.
+  const isTemp = layer === 'temperature';
+  const min = isTemp ? String(Math.round(tempIn(-30, units))) : l.min;
+  const max = isTemp ? `+${Math.round(tempIn(45, units))}` : l.max;
+  const unit = isTemp ? `°${units}` : l.unit;
 
   return (
     <div className="legend bracket">
       <span className="micro">{l.title}</span>
       <div className="legend-bar" style={{ background: l.gradient }} />
       <div className="legend-scale">
-        <span className="mono">{l.min}</span>
-        <span className="mono dim">{l.unit}</span>
-        <span className="mono">{l.max}</span>
+        <span className="mono">{min}</span>
+        <span className="mono dim">{unit}</span>
+        <span className="mono">{max}</span>
       </div>
     </div>
   );

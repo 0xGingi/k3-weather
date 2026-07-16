@@ -15,6 +15,8 @@ function LogoMark() {
 export function TopBar() {
   const now = useNow(1000);
   const gridFetchedAt = useStore((s) => s.gridFetchedAt);
+  const units = useStore((s) => s.units);
+  const setUnits = useStore((s) => s.setUnits);
 
   const utc = now.toUTCString().slice(17, 25);
   const ageMin = gridFetchedAt ? Math.floor((now.getTime() - gridFetchedAt) / 60000) : null;
@@ -31,6 +33,22 @@ export function TopBar() {
       </div>
       <SearchBar />
       <div className="topbar-right">
+        <div className="unit-toggle" role="group" aria-label="Temperature units">
+          <button
+            type="button"
+            className={units === 'F' ? 'active' : ''}
+            onClick={() => setUnits('F')}
+          >
+            °F
+          </button>
+          <button
+            type="button"
+            className={units === 'C' ? 'active' : ''}
+            onClick={() => setUnits('C')}
+          >
+            °C
+          </button>
+        </div>
         <div className="readout">
           <span className="micro">UTC</span>
           <span className="mono accent">{utc}</span>

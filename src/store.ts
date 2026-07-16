@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type { GridPoint } from './api/openmeteo';
 
 export type LayerId = 'temperature' | 'precipitation' | 'cloud' | 'wind';
+export type Units = 'C' | 'F';
 
 export interface SelectedLocation {
   lat: number;
@@ -9,9 +10,14 @@ export interface SelectedLocation {
   name: string | null;
 }
 
+const UNITS_KEY = 'k3-units';
+
 interface AppState {
   selected: SelectedLocation | null;
   select: (s: SelectedLocation | null) => void;
+
+  units: Units;
+  setUnits: (u: Units) => void;
 
   layer: LayerId;
   setLayer: (l: LayerId) => void;
@@ -35,6 +41,12 @@ interface AppState {
 export const useStore = create<AppState>((set) => ({
   selected: null,
   select: (s) => set({ selected: s }),
+
+  units: localStorage.getItem(UNITS_KEY) === 'C' ? 'C' : 'F',
+  setUnits: (u) => {
+    localStorage.setItem(UNITS_KEY, u);
+    set({ units: u });
+  },
 
   layer: 'temperature',
   setLayer: (l) => set({ layer: l }),
