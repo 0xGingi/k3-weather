@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchLocation, type LocationForecast } from '../../api/openmeteo';
 import { formatLatLon } from '../../lib/geo';
-import { tempIn } from '../../lib/units';
+import { fmtRain, fmtSpeed, rainUnit, speedUnit, tempIn } from '../../lib/units';
 import { wmo } from '../../lib/wmo';
 import { useStore } from '../../store';
 import { useNow } from '../../hooks/useNow';
@@ -100,8 +100,8 @@ function PanelBody({ data }: { data: LocationForecast }) {
     totalMm < 0.1 && nextRainIdx === -1
       ? 'NO RAIN EXPECTED IN THE NEXT 24H'
       : nextRainIdx <= 0
-        ? `RAINING NOW · ${totalMm.toFixed(1)} MM IN 24H`
-        : `NEXT RAIN IN ~${nextRainIdx}H · ${totalMm.toFixed(1)} MM IN 24H`;
+        ? `RAINING NOW · ${fmtRain(totalMm, units)} ${rainUnit(units).toUpperCase()} / 24H`
+        : `NEXT RAIN IN ~${nextRainIdx}H · ${fmtRain(totalMm, units)} ${rainUnit(units).toUpperCase()} / 24H`;
 
   const weekMin = Math.min(...data.daily.tempMin.slice(0, 7));
   const weekMax = Math.max(...data.daily.tempMax.slice(0, 7));
@@ -120,10 +120,13 @@ function PanelBody({ data }: { data: LocationForecast }) {
         <div className="stats-grid">
           <Stat label="FEELS LIKE" value={`${Math.round(tempIn(c.feelsLike, units))}°${units}`} />
           <Stat label="HUMIDITY" value={`${c.humidity}%`} />
-          <Stat label="WIND" value={`${c.windSpeed.toFixed(1)} m/s ${windCardinal(c.windDirection)}`} />
+          <Stat
+            label="WIND"
+            value={`${fmtSpeed(c.windSpeed, units)} ${speedUnit(units)} ${windCardinal(c.windDirection)}`}
+          />
           <Stat label="PRESSURE" value={`${Math.round(c.pressure)} hPa`} />
           <Stat label="CLOUD" value={`${c.cloudCover}%`} />
-          <Stat label="PRECIP 1H" value={`${c.precipitation.toFixed(1)} mm`} />
+          <Stat label="PRECIP 1H" value={`${fmtRain(c.precipitation, units)} ${rainUnit(units)}`} />
         </div>
       </section>
 
